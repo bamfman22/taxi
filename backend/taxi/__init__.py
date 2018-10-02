@@ -1,1 +1,1 @@
-from taxi.app import app
+from taxi.app import create_app
