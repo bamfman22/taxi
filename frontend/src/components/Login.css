@@ -1,0 +1,42 @@
+.login-form {
+  margin: 30vh 13vw;
+}
+
+.login-form h1 {
+  font-weight: 600;
+}
+
+.login-form .ant-input {
+  border: none;
+  outline: none;
+  box-shadow: none;
+  border-bottom: 2px solid #e1e1e1;
+  border-radius: 0px;
+  padding-left: 0;
+}
+
+.login-form .ant-input:focus {
+  border-bottom-color: #1890ff;
+}
+
+.login-form .has-error .ant-input:hover {
+  border-color: #e1e1e1;
+}
+
+.login-form .has-error .ant-input:focus {
+  border-bottom-color: #ff4d4f;
+  box-shadow: none;
+}
+
+.login-form .driver-link {
+  line-height: 48px;
+  float: right;
+}
+
+.driver-link .ant-select {
+  vertical-align: bottom;
+}
+
+.login-body .ant-message {
+  position: absolute;
+}

@@ -22,6 +22,11 @@ def create_app(config=None):
     db.init_app(app)
     db.app = app
 
+    @app.after_request
+    def add_header(response):
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        return response
+
     return app
 
 

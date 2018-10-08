@@ -1,0 +1,12 @@
+.logo {
+  float: left;
+  width: 150px;
+  text-align: center;
+}
+
+.logo a {
+  color: white;
+  font-size: 26px;
+  font-weight: 600;
+  text-decoration: none;
+}

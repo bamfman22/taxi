@@ -15,6 +15,18 @@ def login_member(member: Member):
     session.permanent = True
 
 
+def logout_member(member: Member):
+    auth = session.get("token", None)
+    token = Token.query.filter_by(token=auth, member_id=member.id).first()
+
+    if token:
+        db.session.delete(token)
+        db.session.commit()
+
+    session.pop("id", None)
+    session.pop("token", None)
+
+
 def current_member() -> Optional[Member]:
     id = session.get("id", None)
     auth = session.get("token", None)

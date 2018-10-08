@@ -1,0 +1,13 @@
+.banner h2,
+.banner h3 {
+  color: white;
+  line-height: 0.8;
+}
+
+.banner h2 {
+  font-size: 58px;
+}
+
+.banner h3 {
+  font-size: 28px;
+}

@@ -3,6 +3,7 @@
 import re
 import uuid
 import bcrypt
+from flask import jsonify
 from typing import List
 
 from taxi.models import db
@@ -39,24 +40,27 @@ class Member(db.Model):
     def create_token(self) -> Token:
         return Token(member_id=self.id)
 
+    def jsonify(self):
+        return jsonify(email=self.email, name=self.name)
+
     @staticmethod
     def validate_email(email) -> List[str]:
         if not email:
-            return ["email is required"]
+            return ["Email is required"]
         if not EMAIL_REGEX.fullmatch(email):
-            return ["invalid email address"]
+            return ["Invalid email address"]
         if Member.query.filter_by(email=email).first():
-            return ["email has been taken"]
+            return ["Email has been taken"]
         return []
 
     @staticmethod
     def validate_name(name) -> List[str]:
         if not name:
-            return ["name is required"]
+            return ["Name is required"]
         return []
 
     @staticmethod
     def validate_password(password) -> List[str]:
         if not password:
-            return ["password is required"]
+            return ["Password is required"]
         return []

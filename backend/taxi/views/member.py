@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from flask import Blueprint, request, jsonify
-from taxi.utils import login_member, current_member
+from taxi.utils import login_member, logout_member, current_member
 from taxi.models import db, Member
 
 bp = Blueprint("member", __name__, url_prefix="/member")
@@ -25,7 +25,9 @@ def signup():
     db.session.add(member)
     db.session.commit()
 
-    return jsonify(success=1)
+    login_member(member)
+
+    return member.jsonify()
 
 
 @bp.route("/login", methods=["POST"])
@@ -37,9 +39,18 @@ def login():
 
     if member and password and member.checkpw(password):
         login_member(member)
-        return jsonify(success=1)
+        return member.jsonify()
 
-    return jsonify(errors=["email or password is wrong"]), 400
+    return jsonify(errors=["Email or password is incorrect"]), 400
+
+
+@bp.route("/logout")
+def logout():
+    member = current_member()
+
+    logout_member(member)
+
+    return jsonify()
 
 
 @bp.route("/current")
@@ -47,6 +58,6 @@ def current():
     member = current_member()
 
     if member:
-        return jsonify(name=member.name)
+        return member.jsonify()
 
     return jsonify()
