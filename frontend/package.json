@@ -41,7 +41,8 @@
     }
   },
   "devDependencies": {
-    "eslint-plugin-react-app": "^3.0.0"
+    "eslint-plugin-react-app": "^3.0.0",
+    "fetch-mock": "^7.1.0"
   },
   "proxy": "http://localhost:5000"
 }

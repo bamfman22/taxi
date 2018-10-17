@@ -1,0 +1,14 @@
+-i https://pypi.org/simple
+bcrypt==3.1.4
+cffi==1.11.5
+click==7.0
+flask-sqlalchemy==2.3.2
+flask==1.0.2
+itsdangerous==0.24
+jinja2==2.10
+markupsafe==1.0
+pycparser==2.19
+python-dotenv==0.9.1
+six==1.11.0
+sqlalchemy==1.2.12
+werkzeug==0.14.1

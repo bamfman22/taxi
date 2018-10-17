@@ -1,0 +1,26 @@
+cache:
+  yarn: true
+  pip: true
+
+jobs:
+  include:
+    - stage: "lint"
+      python: "3.6"
+      language: python
+      install: ./travis/backend-install.sh
+      script: ./travis/backend-lint.sh
+    - stage: "lint"
+      language: node_js
+      node_js: "node"
+      install: ./travis/frontend-install.sh
+      script: ./travis/frontend-lint.sh
+    - stage: "test"
+      language: python
+      python: "3.6"
+      install: ./travis/backend-install.sh
+      script: ./travis/backend-test.sh
+    - stage: "test"
+      language: node_js
+      node_js: "node"
+      install: ./travis/frontend-install.sh
+      script: ./travis/frontend-test.sh
