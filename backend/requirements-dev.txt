@@ -4,12 +4,9 @@ atomicwrites==1.2.1
 attrs==18.2.0
 black==18.9b0
 click==7.0
-filelock==3.0.9
 more-itertools==4.3.0
 pluggy==0.8.0
 py==1.7.0
 pytest==3.9.1
 six==1.11.0
 toml==0.10.0
-tox==3.5.2
-virtualenv==16.0.0

@@ -3,10 +3,13 @@
 import os
 import ast
 import click
+import dotenv
+from pathlib import Path
 
-from flask import Flask, current_app
+from flask import Flask, current_app, g
 from flask.cli import load_dotenv, with_appcontext
 
+from taxi.utils import current_member, mail
 from taxi.models import db
 
 
@@ -19,8 +22,13 @@ def create_app(config=None):
 
     load_configs(app)
 
+    mail.init_app(app)
     db.init_app(app)
     db.app = app
+
+    @app.before_request
+    def before_request():
+        g.member = current_member()
 
     @app.after_request
     def add_header(response):
@@ -46,12 +54,13 @@ def register_commands(app):
 def load_configs(app):
     secret_key = os.environ.get("SECRET_KEY", "")
     app.config["SECRET_KEY"] = ast.literal_eval('b"%s"' % secret_key)
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
-        "SQLALCHEMY_DATABASE_URI", ""
-    )
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = (
-        os.environ.get("SQLALCHEMY_TRACK_MODIFICATIONS", "") == "true"
-    )
+
+    for k, v in dotenv.dotenv_values().items():
+        if k != "SECRET_KEY":
+            app.config[k] = v
+
+    if "PICTURE_UPLOAD_FOLDER" in app.config:
+        app.config["PICTURE_UPLOAD_FOLDER"] = Path(app.config["PICTURE_UPLOAD_FOLDER"])
 
 
 @click.command()

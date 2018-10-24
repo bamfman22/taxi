@@ -9,6 +9,8 @@ flask-sqlalchemy = "*"
 python-dotenv = "*"
 click = "*"
 bcrypt = "*"
+flask-mail = "*"
+mysqlclient = "*"
 
 [dev-packages]
 pytest = "*"

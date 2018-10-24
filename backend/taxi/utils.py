@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from flask import session
+from flask import session, g, jsonify
+from flask_mail import Mail
 from typing import Optional
-from taxi.models import db, Member, Token
+from taxi.models import db, Member, Token, TokenKind
+
+mail = Mail()
 
 
 def login_member(member: Member):
@@ -34,9 +37,18 @@ def current_member() -> Optional[Member]:
     if not auth or not id:
         return None
 
-    token = Token.query.filter_by(token=auth).first()
+    token = Token.query.filter_by(token=auth, kind=TokenKind.AUTH).first()
 
     if token and token.member_id == id:
         return token.member
 
     return None
+
+
+def require_member(f):
+    def inner():
+        if not g.member:
+            return jsonify(), 400
+        return f()
+
+    return inner
