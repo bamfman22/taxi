@@ -1,0 +1,104 @@
+.dashboard {
+  height: 100vh;
+  position: relative;
+}
+
+.dashboard-cards {
+  position: absolute;
+  left: 40px;
+  top: 100px;
+}
+
+.origin-destination-card {
+  .form {
+    margin-left: 52px;
+  }
+
+  .ant-card-body {
+    position: relative;
+    padding: 12px 0;
+
+    .dots {
+      position: absolute;
+      top: 8px;
+      bottom: 0px;
+      left: 16px;
+      width: 26px;
+      height: 88px;
+      background-repeat: no-repeat;
+    }
+  }
+
+  .origin {
+    display: block;
+    width: 100%;
+    border: none;
+    height: 40px;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .destination {
+    width: 100%;
+
+    .ant-select-selection {
+      border: none;
+      outline: none;
+      box-shadow: none;
+
+      .ant-select-selection__rendered {
+        margin-left: 0;
+        font-size: 16px;
+
+        .ant-select-selection__placeholder {
+          color: #a6a6a6;
+        }
+      }
+    }
+  }
+}
+
+.ant-select-dropdown-menu-item {
+  line-height: 36px;
+  padding: 5px 24px;
+}
+
+.appointment-card {
+  margin-top: 50px;
+
+  .ant-card-body {
+    text-align: center;
+  }
+
+  .taxi-icon {
+    width: 140px;
+    text-align: center;
+    display: inline-block;
+    vertical-align: middle;
+
+    img {
+      width: 40px;
+      display: inline-block;
+    }
+
+    span {
+      margin-top: 10px;
+      display: block;
+    }
+  }
+
+  .time-point {
+    display: inline-block;
+    vertical-align: middle;
+
+    strong {
+      display: block;
+    }
+
+    time {
+      font-size: 32px;
+      font-weight: 600;
+    }
+  }
+}

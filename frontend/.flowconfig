@@ -1,11 +1,16 @@
 [ignore]
 
 [include]
+./src/.*
 
 [libs]
+./global.js
 
 [lints]
 
 [options]
+module.name_mapper.extension='css' -> 'CSSModule'
+module.name_mapper.extension='less' -> 'CSSModule'
+module.system=haste
 
 [strict]

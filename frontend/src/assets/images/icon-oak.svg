@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="250px" height="250px" viewBox="0 0 250 250" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.1 (67048) - http://www.bohemiancoding.com/sketch -->
+    <title>OAK</title>
+    <desc>Created with Sketch.</desc>
+    <g id="OAK" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <circle id="Oval" stroke="#417505" stroke-width="6" cx="125" cy="125" r="103"></circle>
+        <path d="M103.5,192 L103.5,225.224527" id="Line" stroke="#417505" stroke-width="6" stroke-linecap="round"></path>
+        <path d="M124.5,178.5 L124.5,225.224527" id="Line" stroke="#417505" stroke-width="6" stroke-linecap="round"></path>
+        <path d="M145.5,192 L145.5,225.224527" id="Line" stroke="#417505" stroke-width="6" stroke-linecap="round"></path>
+        <path d="M97.8775807,64.150354 L79.8873164,129.814819 L77.7997047,129.990926 C71.5939533,130.514443 65.3881265,131.141208 59.1822116,131.871226 C55.6568788,132.285919 53.0000033,135.273649 53.0000033,138.823289 L53,152 C53,155.865993 56.1340068,159 60,159 L190,159 C193.865993,159 197,155.865993 197,152 L197,138.823292 C197,135.27365 194.343123,132.285919 190.817788,131.871226 C184.61185,131.141206 178.406024,130.514441 172.200296,129.99093 L170.112684,129.81482 L152.122419,64.150354 C151.289115,61.1087952 148.524856,59 145.371211,59 L104.628789,59 C101.475144,59 98.7108845,61.1087952 97.8775807,64.150354 Z" id="Combined-Shape" stroke="#417505" stroke-width="6"></path>
+        <path d="M101.607984,124.951297 L102.401361,128.444942 L98.8226774,128.612377 C85.6094715,129.23058 72.3960251,130.316852 59.1822116,131.871226 C55.6568788,132.285919 53.0000033,135.273649 53.0000033,138.823289 L53,152 C53,155.865993 56.1340068,159 60,159 L190,159 C193.865993,159 197,155.865993 197,152 L197,138.823292 C197,135.27365 194.343123,132.285919 190.817788,131.871226 C177.931985,130.355437 165.046532,129.284798 152.161312,128.65928 L148.582872,128.485563 L149.382445,124.993273 C149.791481,123.206726 150,121.368035 150,119.5 C150,105.969024 139.030976,95 125.5,95 C111.969024,95 101,105.969024 101,119.5 C101,121.353385 101.205261,123.177901 101.607984,124.951297 Z" id="Combined-Shape" stroke="#417505" stroke-width="6"></path>
+        <circle id="Oval" stroke="#417505" stroke-width="6" cx="125.5" cy="119.5" r="24.5"></circle>
+        <path d="M124,107.5 L124,124.704394" id="Line-2" stroke="#417505" stroke-width="5" stroke-linecap="round"></path>
+        <path d="M129.700786,120.175803 L130.068273,132.875002" id="Line-2" stroke="#417505" stroke-width="5" stroke-linecap="round" transform="translate(130.068273, 126.670608) scale(1, -1) rotate(69.000000) translate(-130.068273, -126.670608) "></path>
+        <path d="M113.5,74.5 L136.131695,74.5" id="Line-3" stroke="#417505" stroke-width="6" stroke-linecap="round"></path>
+        <path d="M125,59 L125,22" id="Line-4" stroke="#417505" stroke-width="6" stroke-linecap="round"></path>
+        <path d="M77.5,160 L77.5,216" id="Line-8" stroke="#417505" stroke-width="6" stroke-linecap="round"></path>
+        <path d="M172,161 L172,214" id="Line-8" stroke="#417505" stroke-width="6" stroke-linecap="round"></path>
+    </g>
+</svg>
