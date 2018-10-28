@@ -3,11 +3,12 @@ import { Layout, Button } from 'antd';
 import { withRouter } from 'react-router-dom';
 
 import Header from './Header';
+import Footer from './Footer';
 
 import './Home.css';
 import banner from '../assets/images/banner.jpg';
 
-const { Content, Footer } = Layout;
+const { Content } = Layout;
 
 const Home = props => (
   <Layout className="layout">
@@ -34,9 +35,7 @@ const Home = props => (
         </Button>
       </div>
     </Content>
-    <Footer style={{ textAlign: 'center', paddingBottom: 100, paddingTop: 60 }}>
-      SJSU CS160 Taxi &copy; 2018
-    </Footer>
+    <Footer />
   </Layout>
 );
 

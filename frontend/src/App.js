@@ -3,12 +3,14 @@
 import React, { Component } from 'react';
 import type { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 import Home from './components/Home';
+import NotFound from './components/NotFound';
+import Activation from './components/Activation';
 import LoginSignup from './components/Login';
 import Dashboard from './components/Dashboard';
-import { currentUser } from './actions/UserActions.js';
+import { currentUser } from './actions/UserActions';
 
 import './App.css';
 
@@ -22,12 +24,14 @@ class App extends Component<Dispatch, {}> {
   render() {
     return (
       <Router>
-        <div>
+        <Switch>
           <Route exact path="/" component={Home} />
           <Route path="/login" render={props => <LoginSignup />} />
           <Route path="/signup" render={props => <LoginSignup signup />} />
           <Route path="/dashboard" component={Dashboard} />
-        </div>
+          <Route path="/activate/:token" component={Activation} />
+          <Route component={NotFound} />
+        </Switch>
       </Router>
     );
   }

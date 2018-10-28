@@ -46,7 +46,7 @@ export function updateUser(user) {
   };
 }
 
-function apiRequest(method = 'POST', path, body) {
+export function apiRequest(method = 'POST', path, body) {
   if (method)
     return fetch(path, {
       credentials: 'same-origin',
