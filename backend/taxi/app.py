@@ -39,9 +39,10 @@ def create_app(config=None):
 
 
 def register_blueprints(app):
-    from taxi.views import member
+    from taxi.views import member, trip
 
     app.register_blueprint(member.bp)
+    app.register_blueprint(trip.bp)
 
     return app
 

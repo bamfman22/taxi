@@ -3,7 +3,7 @@
 from flask import Blueprint, request, jsonify, g, current_app, Response
 from flask_mail import Message
 from taxi.utils import login_member, logout_member, require_member, mail
-from taxi.models import db, Member, Token, TokenKind
+from taxi.models import db, Member, Token, TokenKind, Trip
 
 bp = Blueprint("member", __name__, url_prefix="/member")
 
@@ -174,3 +174,14 @@ def picture(token):
         content = fp.read()
 
     return Response(content, mimetype="image/png")
+
+
+@require_member
+@bp.route("/trips")
+def history():
+    trips = Trip.query.filter_by(passenger_id=g.member.id).all()
+
+    if trips:
+        return jsonify(history=list(map(lambda x: x.to_json(), trips)))
+
+    return jsonify(errors=["No history for member"])
