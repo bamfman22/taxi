@@ -4,11 +4,13 @@ import os
 import ast
 import click
 import dotenv
+import eventlet
 from pathlib import Path
 
 from flask import Flask, current_app, g
 from flask.cli import load_dotenv, with_appcontext
 
+from taxi.ws import socketio
 from taxi.utils import current_member, mail
 from taxi.models import db
 
@@ -23,8 +25,14 @@ def create_app(config=None):
     load_configs(app)
 
     mail.init_app(app)
+    socketio.init_app(app, message_queue=app.config["REDIS"])
     db.init_app(app)
     db.app = app
+
+    @app.before_first_request
+    def before_first_request():
+        # this will break the interactive shell
+        eventlet.monkey_patch()
 
     @app.before_request
     def before_request():
@@ -32,7 +40,6 @@ def create_app(config=None):
 
     @app.after_request
     def add_header(response):
-        response.headers["Access-Control-Allow-Origin"] = "*"
         return response
 
     return app

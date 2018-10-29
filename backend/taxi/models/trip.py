@@ -1,5 +1,4 @@
 from enum import Enum
-from flask import jsonify
 from sqlalchemy.sql import func
 
 from taxi.models import db
@@ -15,10 +14,15 @@ class TripStatus(Enum):
 
 class Trip(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    destination = db.Column(db.String(100))
     created = db.Column(db.DateTime, server_default=func.current_timestamp())
     status = db.Column(db.Enum(TripStatus), default=TripStatus.CREATED)
+
     passenger_id = db.Column(db.Integer, db.ForeignKey("member.id"), nullable=False)
+    driver_id = db.Column(db.Integer, db.ForeignKey("member.id"))
+
+    route = db.Column(db.String(500))
+    origin = db.Column(db.String(200))
+    destination = db.Column(db.String(200))
 
     def to_json(self):
         return dict(
@@ -26,4 +30,12 @@ class Trip(db.Model):
             destination=self.destination,
             created=int(self.created.timestamp()),
             status=self.status.name,
+        )
+
+    @classmethod
+    def ongoing_for(cls, passenger):
+        return Trip.query.filter(
+            (Trip.passenger_id == passenger.id)
+            & (Trip.status != TripStatus.FINISHED)
+            & (Trip.status != TripStatus.CANCELED)
         )

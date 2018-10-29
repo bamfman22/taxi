@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from flask import Blueprint, request, jsonify, g, current_app, Response
+from flask import Blueprint, request, jsonify, g, Response
 from flask_mail import Message
 from taxi.utils import login_member, logout_member, require_member, mail
 from taxi.models import db, Member, Token, TokenKind, Trip

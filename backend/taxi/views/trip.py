@@ -14,11 +14,14 @@ def createtrip():
     if not destination:
         return jsonify(errorrs=["please specify destination"]), 400
 
+    if db.session.query(Trip.ongoing_for(g.member).exists()).scalar():
+        return jsonify(errors=["You can only have one active order at one time"]), 400
+
     trip = Trip(passenger_id=g.member.id, destination=destination)
     db.session.add(trip)
     db.session.commit()
 
-    return trip.jsonify()
+    return jsonify(trip.to_json())
 
 
 @require_member

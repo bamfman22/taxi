@@ -6,6 +6,7 @@ import * as _ from 'lodash';
 
 import Header from './Header';
 import DashboardMap from './DashboardMap';
+import { SocketConnection } from '../websocket.js';
 import dots from '../assets/images/dots.svg';
 import taxi_icon from '../assets/images/taxi.svg';
 import './Dashboard.less';
@@ -40,6 +41,7 @@ type DashboardState = {
 
 class Dashboard extends React.Component<{}, DashboardState> {
   dirty: boolean = false;
+  socket: SocketConnection;
 
   constructor(props: {}) {
     super(props);
@@ -50,6 +52,8 @@ class Dashboard extends React.Component<{}, DashboardState> {
       directions: null,
       destination: null
     };
+
+    this.socket = new SocketConnection();
 
     const self: any = this;
     self.successLocated = this.successLocated.bind(this);
@@ -68,6 +72,8 @@ class Dashboard extends React.Component<{}, DashboardState> {
         timeout: Infinity
       }
     );
+
+    this.socket.subscribe();
   }
 
   successLocated({ coords }: Position) {

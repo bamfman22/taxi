@@ -11,10 +11,14 @@ click = "*"
 bcrypt = "*"
 flask-mail = "*"
 mysqlclient = "*"
+flask-socketio = "*"
+eventlet = "*"
+redis = "*"
 
 [dev-packages]
 pytest = "*"
 black = "==18.9b0"
+flask-shell-ipython = "*"
 
 [requires]
 python_version = "3.7"

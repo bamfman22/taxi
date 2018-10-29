@@ -30,19 +30,22 @@ def logout_member(member: Member):
     session.pop("token", None)
 
 
-def current_member() -> Optional[Member]:
-    id = session.get("id", None)
-    auth = session.get("token", None)
-
-    if not auth or not id:
-        return None
-
+def get_member(mid, auth) -> Optional[Member]:
     token = Token.query.filter_by(token=auth, kind=TokenKind.AUTH).first()
-
-    if token and token.member_id == id:
+    if token and token.member_id == mid:
         return token.member
 
     return None
+
+
+def current_member() -> Optional[Member]:
+    mid = session.get("id", None)
+    auth = session.get("token", None)
+
+    if not auth or not mid:
+        return None
+
+    return get_member(mid, auth)
 
 
 def require_member(f):
