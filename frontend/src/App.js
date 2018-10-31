@@ -7,9 +7,10 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 import Home from './components/Home';
 import NotFound from './components/NotFound';
-import Activation from './components/Activation';
-import LoginSignup from './components/Login';
 import Dashboard from './components/Dashboard';
+import Activation from './components/Activation';
+import TripHistory from './views/TripHistory';
+import LoginSignup from './components/Login';
 import { currentUser } from './actions/UserActions';
 
 import './App.css';
@@ -29,6 +30,7 @@ class App extends Component<Dispatch, {}> {
           <Route path="/login" render={props => <LoginSignup />} />
           <Route path="/signup" render={props => <LoginSignup signup />} />
           <Route path="/dashboard" component={Dashboard} />
+          <Route path="/history" component={TripHistory} />
           <Route path="/activate/:token" component={Activation} />
           <Route component={NotFound} />
         </Switch>

@@ -18,18 +18,30 @@ class Trip(db.Model):
     status = db.Column(db.Enum(TripStatus), default=TripStatus.CREATED)
 
     passenger_id = db.Column(db.Integer, db.ForeignKey("member.id"), nullable=False)
+    passenger = db.relationship(
+        "Member", backref="trips", foreign_keys=[passenger_id], lazy=True
+    )
+
     driver_id = db.Column(db.Integer, db.ForeignKey("member.id"))
+    driver = db.relationship(
+        "Member", backref="driving_trips", foreign_keys=[driver_id], lazy=True
+    )
 
     route = db.Column(db.String(500))
     origin = db.Column(db.String(200))
     destination = db.Column(db.String(200))
 
+    subtotal = db.Column(db.Numeric(precision=10, scale=3))
+
     def to_json(self):
         return dict(
-            passenger_id=self.passenger_id,
-            destination=self.destination,
+            id=self.id,
             created=int(self.created.timestamp()),
             status=self.status.name,
+            passenger=(self.passenger.to_json() if self.passenger_id else None),
+            driver=(self.driver.to_json() if self.driver_id else None),
+            destination=self.destination,
+            subtotal=self.subtotal,
         )
 
     @classmethod

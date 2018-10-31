@@ -64,14 +64,17 @@ class Member(db.Model):
     def create_token(self, kind=TokenKind.AUTH) -> Token:
         return Token.create(self, kind)
 
-    def jsonify(self):
-        return jsonify(
+    def to_json(self):
+        return dict(
             email=self.email,
             name=self.name,
             phone=self.phone,
             role=self.role,
             profile_picture=self.profile_picture,
         )
+
+    def jsonify(self):
+        return jsonify(self.to_json())
 
     @property
     def profile_picture(self):

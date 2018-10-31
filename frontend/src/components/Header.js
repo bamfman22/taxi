@@ -11,12 +11,17 @@ class Header extends React.Component {
   renderUserActions() {
     if (this.props.user.name !== undefined) {
       return [
-        <Menu.Item key="1">
-          <Link to="/dashboard">{this.props.user.name}</Link>
-        </Menu.Item>,
-        <Menu.Item key="2" onClick={() => this.props.dispatch(logOut())}>
-          Sign Out
-        </Menu.Item>
+        <Menu.SubMenu title={this.props.user.name} key="1">
+          <Menu.Item>
+            <Link to="/history">Trip History</Link>
+          </Menu.Item>
+          <Menu.Item>
+            <Link to="/settings">Settings</Link>
+          </Menu.Item>
+          <Menu.Item onClick={() => this.props.dispatch(logOut())}>
+            Sign Out
+          </Menu.Item>
+        </Menu.SubMenu>
       ];
     }
 
@@ -68,7 +73,9 @@ class Header extends React.Component {
           style={{ float: 'left', lineHeight: '64px' }}
         >
           <Menu.Item key="1">Drive</Menu.Item>
-          <Menu.Item key="2">Ride</Menu.Item>
+          <Menu.Item key="2">
+            <Link to="/dashboard">Ride</Link>
+          </Menu.Item>
         </Menu>
         {this.renderMessages()}
       </Layout.Header>

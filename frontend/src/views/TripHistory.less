@@ -1,0 +1,107 @@
+.trip-card {
+  & + .trip-card {
+    margin-top: 40px;
+  }
+
+  .ant-card-body {
+    padding: 0;
+    font-size: 0;
+  }
+
+  .route-preview {
+    display: inline-block;
+    width: 50%;
+    height: 300px;
+    background-position: center;
+    vertical-align: top;
+    position: relative;
+    overflow: hidden;
+
+    img {
+      height: 300px;
+    }
+
+    &:before {
+      content: '';
+      top: 0;
+      left: 0;
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      background-image: -moz-linear-gradient(
+        left,
+        rgba(255, 255, 255, 0) 30%,
+        rgba(255, 255, 255, 1) 100%
+      );
+    }
+  }
+
+  .trip-information {
+    display: inline-block;
+    vertical-align: top;
+    padding: 30px;
+    font-size: 14px;
+    width: 50%;
+
+    .price {
+      float: right;
+      font-size: 18px;
+      margin-top: 6px;
+    }
+
+    .driver-information {
+      margin-bottom: 14px;
+
+      .ant-avatar {
+        vertical-align: middle;
+      }
+
+      .name {
+        vertical-align: middle;
+        font-size: 16px;
+        margin-left: 12px;
+        line-height: 24px;
+      }
+    }
+
+    .car-information {
+      .anticon {
+        vertical-align: middle;
+      }
+
+      .car-made {
+        font-size: 16px;
+        margin-left: 12px;
+        line-height: 24px;
+        vertical-align: middle;
+      }
+    }
+
+    .origin-destination {
+      position: relative;
+      font-size: 0;
+      width: 100%;
+      margin-top: 28px;
+
+      .dots {
+        width: 26px;
+        height: 83px;
+        background-repeat: no-repeat;
+        display: inline-block;
+        vertical-align: top;
+      }
+
+      .location-names {
+        display: inline-block;
+        font-size: 18px;
+        vertical-align: top;
+        padding-top: 4px;
+        padding-left: 10px;
+
+        .destination {
+          margin-top: 18px;
+        }
+      }
+    }
+  }
+}

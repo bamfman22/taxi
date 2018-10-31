@@ -114,6 +114,9 @@ class Dashboard extends React.Component<{}, DashboardState> {
         if (status === google.maps.DirectionsStatus.OK) {
           const route = result.routes[0].legs[0];
 
+          console.log(result);
+          console.log(route);
+
           this.setState({
             directions: result,
             duration: route.duration.value

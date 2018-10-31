@@ -179,9 +179,11 @@ def picture(token):
 @require_member
 @bp.route("/trips")
 def history():
-    trips = Trip.query.filter_by(passenger_id=g.member.id).all()
+    since = request.args.get("since", None)
+    trips = Trip.query.filter_by(passenger_id=g.member.id).order_by(Trip.id.desc())
 
-    if trips:
-        return jsonify(history=list(map(lambda x: x.to_json(), trips)))
+    if since:
+        trips = trips.filter(Trip.id >= since)
 
-    return jsonify(errors=["No history for member"])
+    trips = trips.limit(20).all()
+    return jsonify(history=list(map(Trip.to_json, trips)))
