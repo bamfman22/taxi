@@ -32,6 +32,7 @@ def create_app(config=None):
 
     mail.init_app(app)
     socketio.init_app(app, message_queue=app.config["REDIS"])
+    app.redis = socketio.server_options["client_manager"].redis
     db.init_app(app)
     db.app = app
 

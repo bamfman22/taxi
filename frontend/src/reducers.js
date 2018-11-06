@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 
-import { UPDATE_USER, LOG_OUT } from './actions/UserActions';
+import { UPDATE_USER, LOG_OUT, UPDATE_TRIP } from './actions/UserActions';
 
 function userUpdateReducer(state = {}, action) {
   if (action.user) return action.user;
@@ -18,6 +18,20 @@ function userReducer(state = {}, action) {
   }
 }
 
-const taxiApp = combineReducers({ user: userReducer });
+function tripUpdateReducer(state = {}, action) {
+  if (action.trip) return action.trip;
+  return state;
+}
+
+function tripReducer(state = {}, action) {
+  switch (action.type) {
+    case UPDATE_TRIP:
+      return tripUpdateReducer(state, action);
+    default:
+      return state;
+  }
+}
+
+const taxiApp = combineReducers({ user: userReducer, trip: tripReducer });
 
 export default taxiApp;

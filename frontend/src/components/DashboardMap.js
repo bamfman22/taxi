@@ -22,8 +22,6 @@ const DashboardMap = withScriptjs(
     ) : null;
     const zoom = props.position ? 15 : 12;
 
-    console.log(JSON.stringify(GoogleMapsStyle));
-
     return (
       <GoogleMap
         defaultCenter={{
@@ -38,6 +36,7 @@ const DashboardMap = withScriptjs(
           disableDefaultUI: false,
           scaleControl: false,
           fullscreenControl: false,
+          streetViewControl: false,
           styles: GoogleMapsStyle,
           gestureHandling: 'greedy'
         }}

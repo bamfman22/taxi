@@ -36,7 +36,7 @@ class Header extends React.Component {
   }
 
   renderMessages() {
-    if (this.props.user.role === 'deactivated') {
+    if (this.props.user.activated === false) {
       return (
         <div className="header-message warning">
           <div className="header-message-content">

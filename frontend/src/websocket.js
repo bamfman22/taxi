@@ -1,12 +1,22 @@
-import * as io from 'socket.io-client';
+import io from 'socket.io-client';
+
+import { updateTrip } from './actions/UserActions.js';
 
 export class SocketConnection {
-  constructor() {
+  constructor(dispatch) {
+    this.dispatch = dispatch;
     this.socket = io('/');
-    this.socket.on('driver_coordinate', data => console.log(data));
+    this.socket.on('update-trip', this.update_trip.bind(this));
   }
 
-  subscribe() {
-    this.socket.emit('subscribe', { trip: 1 });
+  update_location(location) {
+    this.socket.emit('current-location', {
+      lat: location.lat,
+      lng: location.lng
+    });
+  }
+
+  update_trip(trip) {
+    this.dispatch(updateTrip(trip));
   }
 }

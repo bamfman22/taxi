@@ -4,13 +4,36 @@ import re
 import enum
 import uuid
 import bcrypt
-from flask import jsonify, current_app
+from flask import jsonify
 from typing import List
 
 from taxi.models import db
 
 
 EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+", re.I)
+
+
+class PictureKind(enum.Enum):
+    PROFILE = 1
+    LICENSE = 2
+
+
+class Picture(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    member_id = db.Column(db.Integer, db.ForeignKey("member.id"), nullable=False)
+    token = db.Column(db.String(32), nullable=False)
+    kind = db.Column(db.Enum(PictureKind), nullable=False)
+    picture = db.Column(db.LargeBinary(0xFFFFFFF), nullable=False)
+
+    @staticmethod
+    def genreate_token():
+        return uuid.uuid4().hex
+
+    @classmethod
+    def create(cls, member, kind, picture):
+        return cls(
+            member_id=member.id, kind=kind, token=cls.genreate_token(), picture=picture
+        )
 
 
 class TokenKind(enum.Enum):
@@ -33,26 +56,37 @@ class Token(db.Model):
     def create(cls, member, kind):
         return cls(member_id=member.id, kind=kind, token=cls.genreate_token())
 
-    @property
-    def picture_path(self):
-        if self.kind != TokenKind.PICTURE:
-            return None
 
-        return current_app.config["PICTURE_UPLOAD_FOLDER"] / "{}.png".format(self.token)
+class MemberRole(enum.Enum):
+    PASSENGER = 1
+    DRIVER = 2
 
 
 class Member(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
+    activated = db.Column(db.Boolean(create_constraint=False), default=False)
     name = db.Column(db.String(80), nullable=False)
     _password = db.Column("password", db.LargeBinary(120), nullable=False)
-    role = db.Column(db.String(20), default="deactivated")
+    role = db.Column(db.Enum(MemberRole), default=MemberRole.PASSENGER)
     tokens = db.relationship("Token", backref="member", lazy=True)
     phone = db.Column(db.String(40))
+
+    driver_verified = db.Column(db.Boolean(create_constraint=False), default=False)
+    plate = db.Column(db.String(20))
+    license = db.Column(db.String(20))
+    license_picture_id = db.Column(db.Integer, db.ForeignKey("picture.id"))
+    license_picture = db.relationship(
+        "Picture", backref="member", foreign_keys=[license_picture_id], lazy=True
+    )
 
     @property
     def password(self):
         raise NotImplementedError("use Member.checkpw instead")
+
+    @property
+    def is_driver(self):
+        return self.role == MemberRole.DRIVER
 
     @password.setter
     def password(self, new: bytes):
@@ -69,8 +103,9 @@ class Member(db.Model):
             email=self.email,
             name=self.name,
             phone=self.phone,
-            role=self.role,
+            role=self.role.name.lower(),
             profile_picture=self.profile_picture,
+            activated=self.activated,
         )
 
     def jsonify(self):
@@ -79,8 +114,8 @@ class Member(db.Model):
     @property
     def profile_picture(self):
         token = (
-            Token.query.filter_by(member_id=self.id, kind=TokenKind.PICTURE)
-            .order_by(Token.id.desc())
+            Picture.query.filter_by(member_id=self.id, kind=PictureKind.PROFILE)
+            .order_by(Picture.id.desc())
             .first()
         )
 

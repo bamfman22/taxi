@@ -48,12 +48,16 @@ class LoginSignup extends React.Component {
       if (err) return this.showErrorMessage(err);
 
       const action = this.props.signup
-        ? signUp(values.email, values.name, values.password)
+        ? signUp(values.email, values.name, values.password, values.role)
         : logIn(values.email, values.password);
 
       this.props.dispatch(action).then(
         resp => {
-          this.props.history.push('/');
+          if (this.props.signup && values.role === 'driver') {
+            this.props.history.push('/driver/signup');
+          } else {
+            this.props.history.push('/');
+          }
         },
         ({ errors }) => {
           errors.forEach(msg => message.error(msg));
@@ -93,19 +97,37 @@ class LoginSignup extends React.Component {
                 <Form.Item hasFeedback help="">
                   {getFieldDecorator('name', {
                     rules: [{ required: true, message: 'Name is required' }]
-                  })(<Input size="large" placeholder="Name" />)}
+                  })(
+                    <Input
+                      size="large"
+                      placeholder="Name"
+                      autoComplete="name"
+                    />
+                  )}
                 </Form.Item>
               )}
               <Form.Item hasFeedback help="">
                 {getFieldDecorator('email', {
                   rules: [{ required: true, message: 'Email is required' }]
-                })(<Input size="large" type="email" placeholder="Email" />)}
+                })(
+                  <Input
+                    size="large"
+                    type="email"
+                    placeholder="Email"
+                    autoComplete="email"
+                  />
+                )}
               </Form.Item>
               <Form.Item hasFeedback help="">
                 {getFieldDecorator('password', {
                   rules: [{ required: true, message: 'Password is required' }]
                 })(
-                  <Input size="large" placeholder="Password" type="password" />
+                  <Input
+                    size="large"
+                    placeholder="Password"
+                    type="password"
+                    autoComplete={signup ? 'new-password' : 'current-password'}
+                  />
                 )}
               </Form.Item>
               <Form.Item>
@@ -135,4 +157,4 @@ class LoginSignup extends React.Component {
   }
 }
 
-export default withRouter(connect()(Form.create()(LoginSignup)));
+export default withRouter(connect()(Form.create({})(LoginSignup)));

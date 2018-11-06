@@ -4,6 +4,7 @@ export function signUp(email, name, password, role) {
   form.append('email', email);
   form.append('name', name);
   form.append('password', password);
+  form.append('role', role);
 
   return dispatch =>
     apiRequest('POST', '/member/signup', form).then(json =>
@@ -31,11 +32,28 @@ export function logOut() {
     );
 }
 
+export const DRIVER_SIGNUP = 'DRIVER_SIGNUP';
+export function driverSignup(phone, plate, license, picture) {
+  const form = new FormData();
+
+  form.append('phone', phone);
+  form.append('plate', plate);
+  form.append('license', license);
+  form.append('picture', picture);
+
+  return dispatch =>
+    apiRequest('POST', '/member/driver/signup', form).then(json => {
+      dispatch(updateUser(json));
+    });
+}
+
 export function currentUser() {
   return dispatch =>
-    apiRequest('GET', '/member/current').then(user =>
-      dispatch(updateUser(user))
-    );
+    apiRequest('GET', '/member/current').then(current => {
+      dispatch(updateUser(current.member));
+
+      if (current.trip != null) dispatch(updateTrip(current.trip));
+    });
 }
 
 export const UPDATE_USER = 'UPDATE_USER';
@@ -43,6 +61,14 @@ export function updateUser(user) {
   return {
     type: UPDATE_USER,
     user: user
+  };
+}
+
+export const UPDATE_TRIP = 'UPDATE_TRIP';
+export function updateTrip(trip) {
+  return {
+    type: UPDATE_TRIP,
+    trip: trip
   };
 }
 

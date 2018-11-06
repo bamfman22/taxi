@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, g
+from flask import Blueprint, request, jsonify, g, current_app
 
 from taxi.utils import require_member
 from taxi.models import db, Trip
@@ -20,6 +20,8 @@ def createtrip():
     trip = Trip(passenger_id=g.member.id, destination=destination)
     db.session.add(trip)
     db.session.commit()
+
+    current_app.redis.publish("new-trip", trip.id)
 
     return jsonify(trip.to_json())
 

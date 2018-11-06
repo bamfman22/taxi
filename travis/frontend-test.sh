@@ -7,6 +7,6 @@ set -ev
 if contains_frontend ; then
   echo "travis_fold:start:Frontend Testing"
   cd "$TRAVIS_BUILD_DIR/frontend"
-  yarn test
+  yarn test --ci --forceExit
   echo "travis_fold:end:Frontend Testing"
 fi

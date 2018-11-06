@@ -3,10 +3,14 @@
 import React from 'react';
 import { Button, Card, Select } from 'antd';
 import * as _ from 'lodash';
+import type Dispatch from 'redux';
+import { connect } from 'react-redux';
 
 import Header from './Header';
 import DashboardMap from './DashboardMap';
+import { apiRequest, updateTrip } from '../actions/UserActions';
 import { SocketConnection } from '../websocket.js';
+
 import dots from '../assets/images/dots.svg';
 import taxi_icon from '../assets/images/taxi.svg';
 import './Dashboard.less';
@@ -36,14 +40,31 @@ type DashboardState = {
   position: ?Coordinate,
   destination: ?Destination,
   duration: ?number,
-  directions: ?any
+  directions: ?{
+    request: {
+      origin: {
+        location: {
+          lat: () => number,
+          lng: () => number
+        }
+      },
+      destination: {
+        placeId: string
+      }
+    }
+  }
 };
 
-class Dashboard extends React.Component<{}, DashboardState> {
-  dirty: boolean = false;
-  socket: SocketConnection;
+type DashboardProps = {
+  socket: SocketConnection,
+  dispatch: Dispatch
+};
 
-  constructor(props: {}) {
+class Dashboard extends React.Component<DashboardProps, DashboardState> {
+  dirty: boolean = false;
+  watch_handle: ?number;
+
+  constructor(props: DashboardProps) {
     super(props);
 
     this.state = {
@@ -53,8 +74,6 @@ class Dashboard extends React.Component<{}, DashboardState> {
       destination: null
     };
 
-    this.socket = new SocketConnection();
-
     const self: any = this;
     self.successLocated = this.successLocated.bind(this);
     self.failedLocated = this.failedLocated.bind(this);
@@ -63,7 +82,7 @@ class Dashboard extends React.Component<{}, DashboardState> {
   }
 
   componentDidMount() {
-    navigator.geolocation.getCurrentPosition(
+    this.watch_handle = navigator.geolocation.watchPosition(
       this.successLocated,
       this.failedLocated,
       {
@@ -72,38 +91,69 @@ class Dashboard extends React.Component<{}, DashboardState> {
         timeout: Infinity
       }
     );
+  }
 
-    this.socket.subscribe();
+  componentWillUnmount() {
+    if (this.watch_handle != null)
+      navigator.geolocation.clearWatch(this.watch_handle);
   }
 
   successLocated({ coords }: Position) {
     /* global google */
+    console.debug('location info get');
+    const position = {
+      lat: coords.latitude,
+      lng: coords.longitude
+    };
     this.setState(
       {
-        position: {
-          lat: coords.latitude,
-          lng: coords.longitude
-        }
+        position
       },
       this.fetchNagivation
     );
+    this.props.socket.update_location(position);
   }
 
-  failedLocated() {}
+  failedLocated() {
+    console.debug('failed to gget location info: ', arguments);
+  }
+
+  distance(x: Coordinate, y: Coordinate) {
+    const lat_delta = x.lat - y.lat;
+    const lng_delta = x.lng - y.lng;
+
+    return Math.sqrt(lat_delta * lat_delta + lng_delta * lng_delta);
+  }
 
   fetchNagivation() {
     if (this.state.position == null || this.state.destination == null) return;
 
+    const origin = this.state.position;
     const destination = { placeId: AIRPORT_PLACE_IDS[this.state.destination] };
+
+    if (this.state.directions != null) {
+      const request = this.state.directions.request;
+      const previous_origin = {
+        lat: request.origin.location.lat(),
+        lng: request.origin.location.lng()
+      };
+      const distance = this.distance(previous_origin, origin);
+      const previous_place = request.destination.placeId;
+
+      if (previous_place === destination.placeId && distance < 3e-4) {
+        console.debug(
+          'skipping refetching because distance change is low, change: ',
+          distance
+        );
+        return;
+      }
+    }
+
     const direction = new google.maps.DirectionsService();
-    const origin = new google.maps.LatLng(
-      this.state.position.lat,
-      this.state.position.lng
-    );
 
     direction.route(
       {
-        origin,
+        origin: new google.maps.LatLng(origin.lat, origin.lng),
         destination,
         travelMode: google.maps.TravelMode.DRIVING,
         drivingOptions: {
@@ -163,6 +213,17 @@ class Dashboard extends React.Component<{}, DashboardState> {
     return result;
   }
 
+  requestRide() {
+    if (this.state.destination == null) return;
+
+    const form = new FormData();
+    form.append('destination', this.state.destination);
+
+    apiRequest('POST', '/trip/create', form).then(resp =>
+      this.props.dispatch(updateTrip(resp))
+    );
+  }
+
   renderDestinationCard() {
     return (
       <Card
@@ -178,7 +239,10 @@ class Dashboard extends React.Component<{}, DashboardState> {
             type="text"
             name="origin"
             placeholder="From"
-            defaultValue="Current Location"
+            disabled
+            value={
+              this.state.position == null ? 'Locating...' : 'Current Location'
+            }
           />
           <Select
             size="large"
@@ -208,7 +272,11 @@ class Dashboard extends React.Component<{}, DashboardState> {
       <Card
         title="What time do you want to leave?"
         className="appointment-card"
-        actions={[<Button type="primary">Request a Ride</Button>]}
+        actions={[
+          <Button type="primary" onClick={() => this.requestRide()}>
+            Request a Ride
+          </Button>
+        ]}
       >
         <div className="time-point">
           <strong>Departure</strong>
@@ -253,4 +321,4 @@ class Dashboard extends React.Component<{}, DashboardState> {
   }
 }
 
-export default Dashboard;
+export default connect()(Dashboard);
