@@ -7,7 +7,8 @@ import bcrypt
 from flask import jsonify
 from typing import List
 
-from taxi.models import db
+from taxi.models import db, Trip
+from .member_role import MemberRole
 
 
 EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+", re.I)
@@ -57,11 +58,6 @@ class Token(db.Model):
         return cls(member_id=member.id, kind=kind, token=cls.genreate_token())
 
 
-class MemberRole(enum.Enum):
-    PASSENGER = 1
-    DRIVER = 2
-
-
 class Member(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -99,7 +95,7 @@ class Member(db.Model):
         return Token.create(self, kind)
 
     def to_json(self):
-        return dict(
+        result = dict(
             email=self.email,
             name=self.name,
             phone=self.phone,
@@ -107,6 +103,11 @@ class Member(db.Model):
             profile_picture=self.profile_picture,
             activated=self.activated,
         )
+
+        if self.role == MemberRole.DRIVER:
+            result["plate"] = self.plate
+
+        return result
 
     def jsonify(self):
         return jsonify(self.to_json())
@@ -122,6 +123,12 @@ class Member(db.Model):
         if token:
             return token.token
         return None
+
+    @property
+    def active_trip(self):
+        if not hasattr(self, "_active_trip"):
+            self._active_trip = Trip.ongoing_for(self).first()
+        return self._active_trip
 
     @staticmethod
     def validate_email(email) -> List[str]:

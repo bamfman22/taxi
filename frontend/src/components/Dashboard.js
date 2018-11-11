@@ -1,21 +1,22 @@
 // @flow
 
+/* global google */
+
 import React from 'react';
-import { Button, Card, Select } from 'antd';
-import * as _ from 'lodash';
+import type { ElementRef } from 'react';
 import type Dispatch from 'redux';
 import { connect } from 'react-redux';
 
 import Header from './Header';
 import DashboardMap from './DashboardMap';
-import { apiRequest, updateTrip } from '../actions/UserActions';
+import PassengerCards from './PassengerCards';
+import { apiRequest } from '../actions/UserActions';
+import { updateTrip } from '../actions/TripActions';
 import { SocketConnection } from '../websocket.js';
+import type { Coordinate, Destination, User, Trip } from '../models.js';
+import type LocationService from '../LocationService';
 
-import dots from '../assets/images/dots.svg';
-import taxi_icon from '../assets/images/taxi.svg';
 import './Dashboard.less';
-
-const Option = Select.Option;
 
 const AIRPORT_PLACE_IDS = {
   sjc: 'ChIJm8Wz-sPLj4ARPn72bT9E-rw',
@@ -23,24 +24,10 @@ const AIRPORT_PLACE_IDS = {
   oak: 'ChIJQabAAlSEj4ARYHQBAw8MY7A'
 };
 
-type Coordinate = {
-  lat: number,
-  lng: number
-};
-
-const destinations = {
-  sfo: 'sfo',
-  oak: 'oak',
-  sjc: 'sjc'
-};
-
-type Destination = $Keys<typeof destinations>;
-
 type DashboardState = {
-  position: ?Coordinate,
-  destination: ?Destination,
-  duration: ?number,
-  directions: ?{
+  destination?: Destination,
+  duration?: number,
+  directions?: {
     request: {
       origin: {
         location: {
@@ -57,65 +44,34 @@ type DashboardState = {
 
 type DashboardProps = {
   socket: SocketConnection,
-  dispatch: Dispatch
+  dispatch: Dispatch,
+  user: User,
+  trip: Trip,
+  position: Coordinate,
+  location_service: LocationService
 };
 
 class Dashboard extends React.Component<DashboardProps, DashboardState> {
   dirty: boolean = false;
-  watch_handle: ?number;
+  map: ElementRef<DashboardMap>;
 
   constructor(props: DashboardProps) {
     super(props);
 
-    this.state = {
-      position: null,
-      duration: null,
-      directions: null,
-      destination: null
-    };
+    this.map = React.createRef();
+    this.state = {};
 
     const self: any = this;
-    self.successLocated = this.successLocated.bind(this);
-    self.failedLocated = this.failedLocated.bind(this);
     self.fetchNagivation = this.fetchNagivation.bind(this);
     self.selectDestination = this.selectDestination.bind(this);
   }
 
   componentDidMount() {
-    this.watch_handle = navigator.geolocation.watchPosition(
-      this.successLocated,
-      this.failedLocated,
-      {
-        enableHighAccuracy: true,
-        maximumAge: 100,
-        timeout: Infinity
-      }
-    );
+    this.props.location_service.start();
   }
 
   componentWillUnmount() {
-    if (this.watch_handle != null)
-      navigator.geolocation.clearWatch(this.watch_handle);
-  }
-
-  successLocated({ coords }: Position) {
-    /* global google */
-    console.debug('location info get');
-    const position = {
-      lat: coords.latitude,
-      lng: coords.longitude
-    };
-    this.setState(
-      {
-        position
-      },
-      this.fetchNagivation
-    );
-    this.props.socket.update_location(position);
-  }
-
-  failedLocated() {
-    console.debug('failed to gget location info: ', arguments);
+    this.props.location_service.stop();
   }
 
   distance(x: Coordinate, y: Coordinate) {
@@ -126,10 +82,20 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
   }
 
   fetchNagivation() {
-    if (this.state.position == null || this.state.destination == null) return;
+    if (this.props.position == null || window.google == null) return;
 
-    const origin = this.state.position;
-    const destination = { placeId: AIRPORT_PLACE_IDS[this.state.destination] };
+    let dest;
+
+    if (this.state.destination != null) {
+      dest = this.state.destination;
+    } else if (this.props.trip.destination != null) {
+      dest = this.props.trip.destination;
+    } else {
+      return;
+    }
+
+    const origin = this.props.position;
+    const destination = { placeId: AIRPORT_PLACE_IDS[dest] };
 
     if (this.state.directions != null) {
       const request = this.state.directions.request;
@@ -179,38 +145,7 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
   }
 
   selectDestination(destination: Destination) {
-    this.setState({ destination }, this.fetchNagivation);
-  }
-
-  renderTime(time: Date) {
-    if (time === undefined) {
-      return;
-    }
-
-    return (
-      <time>
-        {_.padStart(time.getHours(), 2, '0')}:
-        {_.padStart(time.getMinutes(), 2, '0')}
-      </time>
-    );
-  }
-
-  formatDuration(duration: number): string {
-    console.log(duration);
-    let result = '';
-
-    const minutes = Math.floor((duration / 60) % 60);
-    if (minutes !== 0) {
-      result = `${minutes}m` + result;
-    }
-
-    // days
-    const hours = Math.floor(duration / 60 / 60);
-    if (hours !== 0) {
-      result = `${hours}h` + result;
-    }
-
-    return result;
+    this.setState({ destination });
   }
 
   requestRide() {
@@ -224,101 +159,59 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
     );
   }
 
-  renderDestinationCard() {
-    return (
-      <Card
-        title="Where do you want to go?"
-        style={{ width: 500 }}
-        className="origin-destination-card"
-      >
-        <div className="dots" style={{ backgroundImage: `url(${dots})` }} />
-
-        <form className="form">
-          <input
-            className="origin"
-            type="text"
-            name="origin"
-            placeholder="From"
-            disabled
-            value={
-              this.state.position == null ? 'Locating...' : 'Current Location'
-            }
-          />
-          <Select
-            size="large"
-            className="destination"
-            placeholder="Destination"
-            onChange={this.selectDestination}
-          >
-            <Option value="sfo">San Francisco International Airport</Option>
-            <Option value="sjc">
-              Norman Y. Mineta San Jose International Airport
-            </Option>
-            <Option value="oak">Oakland International Airport</Option>
-          </Select>
-        </form>
-      </Card>
-    );
+  getOtherPosition() {
+    if (
+      (this.props.trip.status === 'CREATED' ||
+        this.props.trip.status === 'PICKING_UP') &&
+      this.props.trip.location != null
+    ) {
+      if (this.props.user.role === 'passenger') {
+        return this.props.trip.location.driver;
+      } else {
+        return this.props.trip.location.passenger;
+      }
+    }
   }
 
-  renderAppointmentCard() {
-    if (this.state.duration == null) return;
-
-    const origin_time = new Date();
-    const arrival_time = new Date(origin_time.getTime());
-    arrival_time.setSeconds(arrival_time.getSeconds() + this.state.duration);
-
-    return (
-      <Card
-        title="What time do you want to leave?"
-        className="appointment-card"
-        actions={[
-          <Button type="primary" onClick={() => this.requestRide()}>
-            Request a Ride
-          </Button>
-        ]}
-      >
-        <div className="time-point">
-          <strong>Departure</strong>
-          {this.renderTime(origin_time)}
-        </div>
-        <span className="taxi-icon">
-          <img src={taxi_icon} alt="taxi icon" />
-          <span>
-            {this.state.duration && this.formatDuration(this.state.duration)}
-          </span>
-        </span>
-        <div className="time-point">
-          <strong>Arrival</strong>
-          {this.renderTime(arrival_time)}
-        </div>
-      </Card>
-    );
+  renderCards() {
+    if (this.props.user.role === 'passenger') {
+      return (
+        <PassengerCards
+          duration={this.state.duration}
+          onSelectDestination={this.selectDestination.bind(this)}
+          onRequestRide={this.requestRide.bind(this)}
+        />
+      );
+    }
+    return <div />;
   }
 
   render() {
+    this.fetchNagivation();
+
     return (
       <div>
         <Header dashboard />
         <div className="dashboard">
           <DashboardMap
+            ref={this.map}
             className="google-map"
             isMarkerShown
             googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyAFnQKnBs2rcII3s9RvGLIJDQKgW6LJMrk&libraries=geometry,drawing,places"
             loadingElement={<div style={{ height: `100%` }} />}
             containerElement={<div style={{ height: `100%` }} />}
             mapElement={<div style={{ height: `100%` }} />}
-            position={this.state.position}
+            position={this.props.position}
+            otherPosition={this.getOtherPosition()}
             directions={this.state.directions}
           />
         </div>
-        <div className="dashboard-cards">
-          {this.renderDestinationCard()}
-          {this.renderAppointmentCard()}
-        </div>
+        <div className="dashboard-cards">{this.renderCards()}</div>
       </div>
     );
   }
 }
 
-export default connect()(Dashboard);
+export default connect(state => {
+  return { user: state.user, trip: state.trip, position: state.location };
+})(Dashboard);

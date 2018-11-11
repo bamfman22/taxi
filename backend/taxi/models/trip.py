@@ -1,12 +1,13 @@
 from enum import Enum
 from sqlalchemy.sql import func
 
-from taxi.models import db
+from . import db
+from .member_role import MemberRole
 
 
 class TripStatus(Enum):
     CREATED = 1
-    PICKING_UP_PASSENGER = 2
+    PICKING_UP = 2
     EN_ROUTE = 3
     FINISHED = 4
     CANCELED = 5
@@ -45,9 +46,16 @@ class Trip(db.Model):
         )
 
     @classmethod
-    def ongoing_for(cls, passenger):
+    def ongoing_for(cls, member):
+        predicate = None
+
+        if member.role == MemberRole.DRIVER:
+            predicate = Trip.driver_id == member.id
+        else:
+            predicate = Trip.passenger_id == member.id
+
         return Trip.query.filter(
-            (Trip.passenger_id == passenger.id)
+            predicate
             & (Trip.status != TripStatus.FINISHED)
             & (Trip.status != TripStatus.CANCELED)
         )

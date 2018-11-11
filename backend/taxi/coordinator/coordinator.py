@@ -6,7 +6,7 @@ import logging
 from threading import Thread
 from flask_socketio import SocketIO
 
-from ..models import db, Trip, TripStatus, Member
+from ..models import Trip, TripStatus, Member
 
 
 class Coordinator(Thread):
@@ -82,7 +82,7 @@ class Coordinator(Thread):
             "away from the passenger"
         )
         trip.driver = driver
-        trip.status = TripStatus.PICKING_UP_PASSENGER
+        trip.status = TripStatus.PICKING_UP
 
         self.session.add(trip)
         self.session.commit()

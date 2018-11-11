@@ -132,7 +132,9 @@ def logout():
 def current():
     if g.member:
         member = g.member.to_json()
-        trip = Trip.ongoing_for(g.member).first()
+        trip = g.member.active_trip
+
+        print(trip)
 
         return jsonify(member=member, trip=trip.to_json() if trip else None)
 

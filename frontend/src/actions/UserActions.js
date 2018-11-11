@@ -1,3 +1,5 @@
+import { updateTrip } from './TripActions';
+
 export function signUp(email, name, password, role) {
   const form = new FormData();
 
@@ -61,14 +63,6 @@ export function updateUser(user) {
   return {
     type: UPDATE_USER,
     user: user
-  };
-}
-
-export const UPDATE_TRIP = 'UPDATE_TRIP';
-export function updateTrip(trip) {
-  return {
-    type: UPDATE_TRIP,
-    trip: trip
   };
 }
 
