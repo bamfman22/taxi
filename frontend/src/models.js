@@ -2,17 +2,17 @@
 //
 import type { Dispatch } from 'redux';
 
-const destinations = {
-  sfo: 'sfo',
-  oak: 'oak',
-  sjc: 'sjc'
-};
-
 export type DispatchProps = {
   dispatch: Dispatch
 };
 
-export type Destination = $Keys<typeof destinations>;
+export const DestinationName = {
+  sfo: 'San Francisco International Airport',
+  oak: 'Oakland International Airport',
+  sjc: 'Norman Y. Mineta San Jose International Airport'
+};
+
+export type Destination = $Keys<typeof DestinationName>;
 
 export type Coordinate = {
   lat: number,
@@ -40,6 +40,7 @@ export type Trip = {
   passenger: User,
   subtotal: ?string,
   status: string,
+  notified: boolean,
   location?: {
     driver: Coordinate,
     passenger: Coordinate

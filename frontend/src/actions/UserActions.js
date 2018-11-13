@@ -1,4 +1,5 @@
 import { updateTrip } from './TripActions';
+import { apiRequest } from './common';
 
 export function signUp(email, name, password, role) {
   const form = new FormData();
@@ -64,20 +65,4 @@ export function updateUser(user) {
     type: UPDATE_USER,
     user: user
   };
-}
-
-export function apiRequest(method = 'POST', path, body) {
-  if (method)
-    return fetch(path, {
-      credentials: 'same-origin',
-      method,
-      body
-    }).then(response => {
-      window.headers = response.headers;
-      if (response.ok) {
-        return response.json();
-      } else {
-        return response.json().then(data => Promise.reject(data));
-      }
-    });
 }

@@ -8,6 +8,7 @@ import DestinationCard from './DestinationCard';
 import AppointmentCard from './AppointmentCard';
 import WaitingCard from './WaitingCard';
 import PickingUpCard from './PickingUpCard';
+import EnRouteCard from './EnRouteCard';
 
 type Props = {
   user: User,
@@ -34,7 +35,7 @@ class PassengerCards extends React.Component<Props, {}> {
       return <PickingUpCard />;
     } else if (this.props.trip.status === 'EN_ROUTE') {
       // en route
-      return <div />;
+      return <EnRouteCard />;
     }
     return <div />;
   }

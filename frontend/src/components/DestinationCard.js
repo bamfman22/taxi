@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { Card, Select } from 'antd';
 
 import type { Coordinate, Destination, Trip } from '../models';
+import { DestinationName } from '../models';
 
 import dots from '../assets/images/dots.svg';
 
@@ -45,11 +46,9 @@ class DestinationCard extends React.Component<Props, {}> {
             disabled={this.props.trip.id != null}
             value={this.props.trip.destination}
           >
-            <Option value="sfo">San Francisco International Airport</Option>
-            <Option value="sjc">
-              Norman Y. Mineta San Jose International Airport
-            </Option>
-            <Option value="oak">Oakland International Airport</Option>
+            {['sfo', 'sjc', 'oak'].map(code => (
+              <Option value={code}>{DestinationName[code]}</Option>
+            ))}
           </Select>
         </form>
       </Card>

@@ -4,25 +4,21 @@
 
 import React from 'react';
 import type { ElementRef } from 'react';
-import type Dispatch from 'redux';
+import type { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 
 import Header from './Header';
 import DashboardMap from './DashboardMap';
 import PassengerCards from './PassengerCards';
-import { apiRequest } from '../actions/UserActions';
+import DriverCards from './DriverCards';
+import { apiRequest } from '../actions/common';
 import { updateTrip } from '../actions/TripActions';
 import { SocketConnection } from '../websocket.js';
 import type { Coordinate, Destination, User, Trip } from '../models.js';
 import type LocationService from '../LocationService';
+import { AIRPORT_PLACE_IDS } from '../constants';
 
 import './Dashboard.less';
-
-const AIRPORT_PLACE_IDS = {
-  sjc: 'ChIJm8Wz-sPLj4ARPn72bT9E-rw',
-  sfo: 'ChIJVVVVVYx3j4ARP-3NGldc8qQ',
-  oak: 'ChIJQabAAlSEj4ARYHQBAw8MY7A'
-};
 
 type DashboardState = {
   destination?: Destination,
@@ -183,7 +179,7 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
         />
       );
     }
-    return <div />;
+    return <DriverCards />;
   }
 
   render() {
@@ -212,6 +208,6 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
   }
 }
 
-export default connect(state => {
-  return { user: state.user, trip: state.trip, position: state.location };
+export default connect(({ user, trip, location }) => {
+  return { user, trip, position: location };
 })(Dashboard);

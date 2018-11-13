@@ -72,7 +72,9 @@ class Header extends React.Component {
           selectable={false}
           style={{ float: 'left', lineHeight: '64px' }}
         >
-          <Menu.Item key="1">Drive</Menu.Item>
+          <Menu.Item key="1">
+            <Link to="/dashboard">Ride</Link>
+          </Menu.Item>
           <Menu.Item key="2">
             <Link to="/dashboard">Ride</Link>
           </Menu.Item>
