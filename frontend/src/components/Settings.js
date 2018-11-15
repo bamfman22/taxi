@@ -4,6 +4,7 @@ import React from 'react';
 import connect from 'react-redux/es/connect/connect';
 import { Link } from 'react-router-dom';
 import Header from './Header';
+import './Settings.css';
 
 class Settings extends React.Component {
   render() {
@@ -27,12 +28,18 @@ class Settings extends React.Component {
       {
         title: 'License Plate',
         description: 'none'
+      },
+      {
+        title: 'Phone Number',
+        description: this.props.user.phone
       }
     ];
 
     return (
       <div>
+        <Header />
         <List
+          className="list"
           itemLayout="horizontal"
           dataSource={data}
           renderItem={item => (

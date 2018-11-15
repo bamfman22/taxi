@@ -93,15 +93,15 @@ class Profile extends React.Component {
           )}
         </FormItem>
         <FormItem
-          label="License Plate"
+          label="Phone Number"
           labelCol={{ span: 5 }}
           wrapperCol={{ span: 12 }}
         >
-          {getFieldDecorator('plate', {
-            rules: [{ required: false, message: 'license plate' }]
+          {getFieldDecorator('number', {
+            rules: [{ required: false, message: 'phone number' }]
           })(
             <Input
-              placeholder={this.props.user.license}
+              placeholder={this.props.user.phone}
               className={'name-class'}
             />
           )}
