@@ -16,7 +16,7 @@ class TripHistory extends React.Component {
     return (
       <Card className="trip-card">
         <div className="route-preview">
-          <img src={RoutePreview} />
+          <img src={RoutePreview} alt="" />
         </div>
         <div className="trip-information">
           <div className="price">$11.74</div>

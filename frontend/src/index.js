@@ -1,15 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { createLogger } from 'redux-logger';
-import thunk from 'redux-thunk';
-import { createStore, applyMiddleware } from 'redux';
-import './index.css';
-import taxiApp from './reducers';
+
 import App from './App';
+import store from './store';
 import registerServiceWorker from './registerServiceWorker';
 
-const store = createStore(taxiApp, applyMiddleware(createLogger(), thunk));
+import './index.css';
 
 ReactDOM.render(
   <Provider store={store}>

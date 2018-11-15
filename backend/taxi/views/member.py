@@ -2,8 +2,17 @@
 
 from flask import Blueprint, request, jsonify, g, Response
 from flask_mail import Message
-from taxi.utils import login_member, logout_member, require_member, mail
-from taxi.models import db, Member, Token, TokenKind, Trip
+from taxi.utils import login_member, logout_member, require_member, require_driver, mail
+from taxi.models import (
+    db,
+    Member,
+    MemberRole,
+    Token,
+    TokenKind,
+    Trip,
+    Picture,
+    PictureKind,
+)
 
 bp = Blueprint("member", __name__, url_prefix="/member")
 
@@ -15,7 +24,7 @@ Hello {member.name},
 
 Please use the following link to verify your account:
 
-{request.host_url}member/activate/{token.token}
+{request.host_url}activate/{token.token}
 
 If you believe this email is sent to you by mistake, please ignore it.
 
@@ -30,16 +39,25 @@ def signup():
     email = request.form.get("email", None)
     name = request.form.get("name", None)
     password = request.form.get("password", "").encode("utf-8")
+    role = request.form.get("role", "PASSENGER").upper()
 
     errors = []
     errors.extend(Member.validate_email(email))
     errors.extend(Member.validate_name(name))
     errors.extend(Member.validate_password(password))
 
+    if not hasattr(MemberRole, role):
+        errors.append("invalid role selection")
+
     if errors:
         return jsonify(errors=errors), 400
 
-    member = Member(email=email, name=name, password=password)
+    member = Member(
+        email=email,
+        name=name,
+        password=password,
+        role=getattr(MemberRole, role, MemberRole.PASSENGER),
+    )
     db.session.add(member)
     db.session.commit()
 
@@ -49,6 +67,41 @@ def signup():
     send_activate_mail(member, activate_token)
 
     login_member(member)
+
+    return member.jsonify()
+
+
+@require_driver
+@bp.route("/driver/signup", methods=["POST"])
+def driver_signup():
+    phone = request.form.get("phone", None)
+    plate = request.form.get("plate", None)
+    license = request.form.get("license", None)
+    picture_token = request.form.get("picture", None)
+
+    if not phone or not plate or not license or not picture_token:
+        return jsonify(errors=["required field is missing."]), 400
+
+    if len(phone) != 10 or len(plate) > 7 or len(license) != 8:
+        return jsonify(errors=["invalid phone, plate or driver license number"]), 400
+
+    picture = Picture.query.filter(Picture.token == picture_token).first()
+
+    if not picture:
+        return jsonify(errors=["picture of the driver license is missing"]), 400
+
+    member = g.member
+
+    if member.driver_verified:
+        return jsonify(errors=["driver information already verified"]), 400
+
+    member.phone
+    member.plate = plate
+    member.license = license
+    member.license_picture = picture
+
+    db.session.add(member)
+    db.session.commit()
 
     return member.jsonify()
 
@@ -78,7 +131,12 @@ def logout():
 @bp.route("/current")
 def current():
     if g.member:
-        return g.member.jsonify()
+        member = g.member.to_json()
+        trip = g.member.active_trip
+
+        print(trip)
+
+        return jsonify(member=member, trip=trip.to_json() if trip else None)
 
     return jsonify()
 
@@ -94,7 +152,7 @@ def activate(raw_token):
         return jsonify(success=1, message="exist")
 
     member = token.member
-    member.role = "member"
+    member.activated = True
 
     db.session.add(member)
     db.session.delete(token)
@@ -137,25 +195,29 @@ PICTURE_MIME = ["image/png"]
 
 
 @require_member
-@bp.route("/picture", methods=["POST"])
+@bp.route("/upload", methods=["POST"])
 def upload_picture():
-    picture = request.files.get("picture", None)
+    picture = request.files.get("file", None)
+    pictype = request.form.get("type", None)
     errors = []
 
     if not picture:
         errors.append("no file uploaded")
+    elif not pictype:
+        errors.append("no file type specified")
     else:
+        pictype = pictype.upper()
+
+        if not hasattr(PictureKind, pictype):
+            errors.append("invalid picture type")
+
         if picture.mimetype not in PICTURE_MIME:
             errors.append("wrong file type")
 
     if errors:
         return jsonify(errors=errors), 400
 
-    member = g.member
-    token = member.create_token(TokenKind.PICTURE)
-    path = token.picture_path
-
-    picture.save(str(path))
+    token = Picture.create(g.member, getattr(PictureKind, pictype), picture.read())
 
     db.session.add(token)
     db.session.commit()

@@ -7,6 +7,10 @@
   position: absolute;
   left: 40px;
   top: 100px;
+
+  .ant-card + .ant-card {
+    margin-top: 50px;
+  }
 }
 
 .origin-destination-card {
@@ -42,11 +46,13 @@
 
   .destination {
     width: 100%;
+    color: rgba(0, 0, 0, 0.65);
 
     .ant-select-selection {
       border: none;
       outline: none;
       box-shadow: none;
+      background: white;
 
       .ant-select-selection__rendered {
         margin-left: 0;
@@ -66,8 +72,6 @@
 }
 
 .appointment-card {
-  margin-top: 50px;
-
   .ant-card-body {
     text-align: center;
   }
@@ -100,6 +104,29 @@
     time {
       font-size: 32px;
       font-weight: 600;
+    }
+  }
+}
+
+.picking-up-card {
+  .ant-avatar {
+    vertical-align: top;
+  }
+
+  .user-info {
+    display: inline-block;
+    line-height: 32px;
+    vertical-align: top;
+    margin-left: 14px;
+
+    span {
+      display: block;
+    }
+
+    .user-name {
+      font-weight: bold;
+      color: #4a90e2;
+      font-size: 18px;
     }
   }
 }

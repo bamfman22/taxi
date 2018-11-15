@@ -4,7 +4,7 @@ import { withRouter } from 'react-router-dom';
 
 import Header from './Header';
 import Footer from './Footer';
-import { apiRequest } from '../actions/UserActions';
+import { apiRequest } from '../actions/common';
 
 const { Content } = Layout;
 

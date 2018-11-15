@@ -3,7 +3,7 @@
 from flask import session, g, jsonify
 from flask_mail import Mail
 from typing import Optional
-from taxi.models import db, Member, Token, TokenKind
+from taxi.models import db, Member, MemberRole, Token, TokenKind
 
 mail = Mail()
 
@@ -49,9 +49,18 @@ def current_member() -> Optional[Member]:
 
 
 def require_member(f):
-    def inner():
+    def inner(*args, **kwargs):
         if not g.member:
             return jsonify(), 400
-        return f()
+        return f(*args, **kwargs)
+
+    return inner
+
+
+def require_driver(f):
+    def inner(*args, **kwargs):
+        if not g.member or g.member.role != MemberRole.DRIVER:
+            return jsonify(), 400
+        return f(*args, **kwargs)
 
     return inner

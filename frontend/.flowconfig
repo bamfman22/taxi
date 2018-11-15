@@ -1,10 +1,13 @@
 [ignore]
+.*/node_modules/npm/.*
+.*/node_modules/rc-util/lib/.*
 
 [include]
 ./src/.*
 
 [libs]
 ./global.js
+./flow-typed/
 
 [lints]
 
