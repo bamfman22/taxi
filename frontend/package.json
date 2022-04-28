@@ -5,7 +5,7 @@
   "dependencies": {
     "antd": "^3.9.3",
     "babel-plugin-import": "^1.9.1",
-    "cross-fetch": "^2.2.2",
+    "cross-fetch": "^3.1.5",
     "flow-bin": "^0.81.0",
     "husky": "^1.0.1",
     "immutable": "^3.8.2",
